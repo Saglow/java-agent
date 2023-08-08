@@ -1,25 +1,16 @@
 package cn.oneforce.javaagent;
 
 import javassist.*;
-import javassist.bytecode.CodeAttribute;
-import javassist.bytecode.LocalVariableAttribute;
-import javassist.bytecode.MethodInfo;
 
 import java.io.ByteArrayInputStream;
 import java.lang.instrument.ClassFileTransformer;
 import java.security.ProtectionDomain;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * Created by caoyanfei on 16/10/27.
  */
-public class TraceConstructorParamsTransformer3 implements ClassFileTransformer{
+public class TraceConstructorParamsTransformer5 implements ClassFileTransformer{
 
     @Override
     public byte[] transform(ClassLoader loader,
@@ -61,7 +52,7 @@ public class TraceConstructorParamsTransformer3 implements ClassFileTransformer{
                                 && !Modifier.isFinal(temp.getModifiers())
                                 && !Modifier.isNative(temp.getModifiers())
                                 && !Modifier.isStatic(temp.getModifiers())) {
-                            temp.insertBefore(preConstructFormat.formatted(temp.getName()));
+                            temp.insertBefore(preConstructFormat.formatted(temp.getName(),temp.getName()));
                             temp.insertAfter(afterConstructFormat);
                         }
                     } catch (Exception e) {
@@ -81,21 +72,30 @@ public class TraceConstructorParamsTransformer3 implements ClassFileTransformer{
 
     private static String preConstructFormat = """
             {
-//                Integer depth = xyz.saglow.exercise.spring.controller.DepthStorage.getDepth();
-//                if(depth == null){
-//                    depth = 0;
-//                }
-//                for(int i = 0 ; i < depth ; i++){
-//                    System.out.print("+ ");
-//                }
-//                xyz.saglow.exercise.spring.controller.DepthStorage.setDepth(depth+1);
-                System.out.println("%s");
+                System.out.println("1");
+                MyMethodTree<String,Long,Long> currentNode = cn.oneforce.javaagent.TreeStorage.getTree();
+                if (currentNode.isRoot()) {
+                    currentNode.setValue("%s");
+                    currentNode.setStartTime(System.currentTimeMillis());
+                    cn.oneforce.javaagent.TreeStorage.setTree(currentNode);
+                } else {
+                    MyMethodTree<String,Long,Long> newNode = new MyMethodTree<>("%s",System.currentTimeMillis());
+                    currentNode.addChild(newNode);
+                    cn.oneforce.javaagent.TreeStorage.setTree(newNode);
+                }
             }
             """;
     private static String afterConstructFormat = """
             {
-                Integer depth = xyz.saglow.exercise.spring.controller.DepthStorage.getDepth();
-                xyz.saglow.exercise.spring.controller.DepthStorage.setDepth(depth-1);
+                 MyMethodTree<String,Long,Long> currentNode = cn.oneforce.javaagent.TreeStorage.getTree();
+                 currentNode.setEndTime(System.currentTimeMillis());
+                 if (currentNode.isRoot()) {
+                     List<MyMethodTree<String,Long,Long>> list = new ArrayList<>();
+                     list.add(currentNode);
+                     MyMethodTree.print(list);
+                 } else {
+                     cn.oneforce.javaagent.TreeStorage.setTree(currentNode.getParent());
+                 }
             }
             """;
 

@@ -1,25 +1,16 @@
 package cn.oneforce.javaagent;
 
 import javassist.*;
-import javassist.bytecode.CodeAttribute;
-import javassist.bytecode.LocalVariableAttribute;
-import javassist.bytecode.MethodInfo;
 
 import java.io.ByteArrayInputStream;
 import java.lang.instrument.ClassFileTransformer;
 import java.security.ProtectionDomain;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * Created by caoyanfei on 16/10/27.
  */
-public class TraceConstructorParamsTransformer3 implements ClassFileTransformer{
+public class TraceConstructorParamsTransformer4 implements ClassFileTransformer{
 
     @Override
     public byte[] transform(ClassLoader loader,
@@ -81,21 +72,18 @@ public class TraceConstructorParamsTransformer3 implements ClassFileTransformer{
 
     private static String preConstructFormat = """
             {
-//                Integer depth = xyz.saglow.exercise.spring.controller.DepthStorage.getDepth();
-//                if(depth == null){
-//                    depth = 0;
-//                }
-//                for(int i = 0 ; i < depth ; i++){
-//                    System.out.print("+ ");
-//                }
-//                xyz.saglow.exercise.spring.controller.DepthStorage.setDepth(depth+1);
-                System.out.println("%s");
+               int depth = cn.oneforce.javaagent.DepthStorage.getDepth();
+                for(int i = 0 ; i < depth ; i++){
+                    System.out.print("+ ");
+               }
+               System.out.println("%s");
+               cn.oneforce.javaagent.DepthStorage.setDepth(depth+1);
             }
             """;
     private static String afterConstructFormat = """
             {
-                Integer depth = xyz.saglow.exercise.spring.controller.DepthStorage.getDepth();
-                xyz.saglow.exercise.spring.controller.DepthStorage.setDepth(depth-1);
+                int depth = cn.oneforce.javaagent.DepthStorage.getDepth();
+                cn.oneforce.javaagent.DepthStorage.setDepth(depth-1);
             }
             """;
 

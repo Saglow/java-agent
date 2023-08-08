@@ -8,12 +8,12 @@ package cn.oneforce.javaagent;
 public class DepthStorage {
     private static ThreadLocal<Integer> tl = new ThreadLocal<>();
 
-    public static void setDepth(Integer depth) {
+    public static void setDepth(int depth) {
         tl.set(depth);
     }
 
-    public static Integer getDepth() {
-        return tl.get();
+    public static int getDepth() {
+        return tl.get()==null?0:tl.get();
     }
     public static void remove() {
         tl.remove();

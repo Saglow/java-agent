@@ -11,7 +11,7 @@ import java.security.ProtectionDomain;
 public class MyAgent {
     public static void premain(String agentOps, Instrumentation inst){
         System.out.println("Run the trace agent");
-        inst.addTransformer(new TraceConstructorParamsTransformer3());
+        inst.addTransformer(new TraceConstructorParamsTransformer4());
 
     }
 

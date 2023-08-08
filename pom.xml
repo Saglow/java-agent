@@ -23,6 +23,14 @@
         </repository>
         <!-- 可选：如果需要添加其他阿里云仓库，可以继续在这里添加 -->
     </repositories>
+    <dependencies>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.28</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
 
     <build><sourceDirectory>src/main/java</sourceDirectory>
         <plugins>
