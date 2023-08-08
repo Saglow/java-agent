@@ -70,34 +70,60 @@ public class TraceConstructorParamsTransformer5 implements ClassFileTransformer{
         return classfileBuffer;
     }
 
-    private static String preConstructFormat = """
+    private static String preConstructFormat =
+            """
             {
-                System.out.println("1");
-                MyMethodTree<String,Long,Long> currentNode = cn.oneforce.javaagent.TreeStorage.getTree();
-                if (currentNode.isRoot()) {
-                    currentNode.setValue("%s");
-                    currentNode.setStartTime(System.currentTimeMillis());
+                if (cn.oneforce.javaagent.TreeStorage.getTree()==null) {
+                    cn.oneforce.javaagent.MyMethodTree currentNode = new cn.oneforce.javaagent.MyMethodTree("%s",System.currentTimeMillis());
                     cn.oneforce.javaagent.TreeStorage.setTree(currentNode);
-                } else {
-                    MyMethodTree<String,Long,Long> newNode = new MyMethodTree<>("%s",System.currentTimeMillis());
+                }
+                else {
+                    cn.oneforce.javaagent.MyMethodTree currentNode = cn.oneforce.javaagent.TreeStorage.getTree();
+                    cn.oneforce.javaagent.MyMethodTree newNode = new cn.oneforce.javaagent.MyMethodTree("%s",System.currentTimeMillis());
                     currentNode.addChild(newNode);
                     cn.oneforce.javaagent.TreeStorage.setTree(newNode);
                 }
+                
             }
             """;
+//    {
+//        cn.oneforce.javaagent.MyMethodTree currentNode = cn.oneforce.javaagent.TreeStorage.getTree();
+//        boolean b = currentNode.isRoot();
+//        if (b) {
+//            currentNode.setValue("%s");
+//            currentNode.setStartTime(System.currentTimeMillis());
+//            cn.oneforce.javaagent.TreeStorage.setTree(currentNode);
+//        } else {
+//            cn.oneforce.javaagent.MyMethodTree newNode = new MyMethodTree("%s",System.currentTimeMillis());
+//            currentNode.addChild(newNode);
+//            cn.oneforce.javaagent.TreeStorage.setTree(newNode);
+//        }
+//    }
+
+
     private static String afterConstructFormat = """
             {
-                 MyMethodTree<String,Long,Long> currentNode = cn.oneforce.javaagent.TreeStorage.getTree();
-                 currentNode.setEndTime(System.currentTimeMillis());
-                 if (currentNode.isRoot()) {
-                     List<MyMethodTree<String,Long,Long>> list = new ArrayList<>();
-                     list.add(currentNode);
-                     MyMethodTree.print(list);
-                 } else {
-                     cn.oneforce.javaagent.TreeStorage.setTree(currentNode.getParent());
-                 }
+                cn.oneforce.javaagent.MyMethodTree currentNode = cn.oneforce.javaagent.TreeStorage.getTree();
+                currentNode.setEndTime(System.currentTimeMillis());
+                    if (currentNode.isRoot()) {
+                        java.util.ArrayList list = new java.util.ArrayList();
+                        list.add(currentNode);
+                        cn.oneforce.javaagent.MyMethodTree.print(list);
+                    } else {
+                        cn.oneforce.javaagent.TreeStorage.setTree(currentNode.getParent());
+                    }
             }
             """;
+//    {
+//        currentNode.setEndTime(System.currentTimeMillis());
+//        if (currentNode.isRoot()) {
+//            List<MyMethodTree<String,Long,Long>> list = new ArrayList<>();
+//            list.add(currentNode);
+//            MyMethodTree.print(list);
+//        } else {
+//            cn.oneforce.javaagent.TreeStorage.setTree(currentNode.getParent());
+//        }
+//    }
 
 
 

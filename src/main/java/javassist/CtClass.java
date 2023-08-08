@@ -1607,6 +1607,9 @@ public abstract class CtClass {
         }
     }
 
+    public void importPackage(String s) {
+    }
+
     static class DelayedFileOutputStream extends OutputStream {
         private FileOutputStream file;
         private String filename;
